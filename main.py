@@ -7,6 +7,7 @@ from io import StringIO
 
 load_dotenv()
 
+REPORTS_DIR = "reports"
 CSV_FILENAME = "trade_history.csv"
 XML_FILENAME = "trade_history.xml"
 FAIL_STATUS = "Fail"
@@ -30,12 +31,16 @@ def get_tag_value(xml_string, tag):
 
 
 def save_xml(xml_data):
-    with open(XML_FILENAME, "w", encoding="utf-8") as f:
+    os.makedirs(REPORTS_DIR, exist_ok=True)
+    xml_path = os.path.join(REPORTS_DIR, XML_FILENAME)
+    with open(xml_path, "w", encoding="utf-8") as f:
         f.write(xml_data)
 
 
 def save_csv(csv_data):
-    with open(CSV_FILENAME, "w", encoding="utf-8") as f:
+    os.makedirs(REPORTS_DIR, exist_ok=True)
+    csv_path = os.path.join(REPORTS_DIR, CSV_FILENAME)
+    with open(csv_path, "w", encoding="utf-8") as f:
         f.write(csv_data)
 
 
@@ -75,7 +80,7 @@ def get_statement(ref_code):
     r = requests.get(data_url)
 
     # todo: implement error checking
-    return r.text.strip()
+    return r
 
 
 def main():
@@ -92,12 +97,14 @@ def main():
 
     print(f"Request success, downloading report, reference code - {ref_code}")
 
-    content = get_statement(ref_code)
+    r = get_statement(ref_code)
+    content = r.text.strip()
+    content_type = r.headers.get("Content-Type", "")
 
     if not content:
         return
 
-    if content.startswith("<?xml"):
+    if "xml" in content_type.lower():
         save_xml(content)
         print("XML data saved to trade_history.xml")
 
