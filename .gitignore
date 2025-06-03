@@ -3,6 +3,7 @@ assets/
 lab/
 *.zip
 reports
+credentials.csv
 
 *.dSYM
 *.dSYM-*
