@@ -1,0 +1,23 @@
+name: Build Windows EXE
+
+on: [push]
+
+jobs:
+    build:
+        runs-on: windows-latest
+
+        steps:
+            - uses: actions/checkout@v2
+            - name: Set up Python
+              uses: actions/setup-python@v2
+              with:
+                  python-version: "3.12"
+            - name: Install dependencies
+              run: pip install -r requirements.txt
+            - name: Build EXE with PyInstaller
+              run: pyinstaller main.py
+            - name: Upload EXE and Dependencies as Artifact
+              uses: actions/upload-artifact@v2
+              with:
+                  name: windows-executable-folder
+                  path: dist/main/
