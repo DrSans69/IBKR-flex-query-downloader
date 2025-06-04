@@ -25,14 +25,13 @@ def get_report(token: str, query_id: str) -> requests.Response | None:
 
 
 def main():
-    load_credentials()
+    creds = Credentials()
 
-    if not len(credentials):
+    if not len(creds):
         logging.warning(
             f"File with credentials ({CREDS_FILENAME}) is empty or incorrectly structured")
 
-    for cred in credentials:
-        name = cred.name
+    for name, cred in creds.items():
         token = cred.token
         query_id = cred.query_id
 
@@ -48,11 +47,11 @@ def main():
         content = report.text.strip()
 
         if "xml" in content_type.lower():
-            save_xml(content)
+            save_xml_report(content)
             logging.info("XML data saved to trade_history.xml")
 
         else:
-            save_csv(content)
+            save_csv_report(content)
             logging.info("CSV data saved to trade_history.csv")
 
         logging.info("Report saved")
