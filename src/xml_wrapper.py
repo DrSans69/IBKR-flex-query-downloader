@@ -1,7 +1,7 @@
 import xml.etree.ElementTree as ET
 
 
-def get_tag_value(xml_string, tag):
+def get_tag_value(xml_string: str, tag: str) -> str | None:
     try:
         root = ET.fromstring(xml_string)
         element = root.find('.//' + tag)

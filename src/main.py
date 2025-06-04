@@ -10,13 +10,13 @@ logging.basicConfig(
 )
 
 
-def get_report(token, query_id):
+def get_report(token: str, query_id: str) -> requests.Response | None:
     logging.info("Request to IBKR send")
 
     ref_code = send_request(token, query_id)
 
     if not ref_code:
-        return
+        return None
 
     logging.info(
         f"Request success, downloading report, reference code - {ref_code}")

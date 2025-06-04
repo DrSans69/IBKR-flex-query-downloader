@@ -1,10 +1,10 @@
-from config import REPORTS_DIR, XML_FILENAME, CSV_FILENAME, CREDS_FILENAME
-
 import os
 import csv
 import logging
 from dataclasses import dataclass
 from typing import List
+
+from config import REPORTS_DIR, XML_FILENAME, CSV_FILENAME, CREDS_FILENAME
 
 
 @dataclass
@@ -17,14 +17,14 @@ class Credential:
 credentials: List[Credential] = []
 
 
-def save_xml(xml_data):
+def save_xml(xml_data: str):
     os.makedirs(REPORTS_DIR, exist_ok=True)
     xml_path = os.path.join(REPORTS_DIR, XML_FILENAME)
     with open(xml_path, "w", encoding="utf-8") as f:
         f.write(xml_data)
 
 
-def save_csv(csv_data):
+def save_csv(csv_data: str):
     os.makedirs(REPORTS_DIR, exist_ok=True)
     csv_path = os.path.join(REPORTS_DIR, CSV_FILENAME)
     with open(csv_path, "w", encoding="utf-8") as f:
