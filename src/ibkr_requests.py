@@ -1,8 +1,8 @@
-from config import SEND_REQUEST_URL_TEMPLATE, FAIL_STATUS, SUCCESS_STATUS, GET_STATEMENT_URL_TEMPLATE
-
-import requests
 import logging
 
+import requests
+
+from config import SEND_REQUEST_URL_TEMPLATE, FAIL_STATUS, SUCCESS_STATUS, GET_STATEMENT_URL_TEMPLATE
 from xml_wrapper import get_tag_value
 
 

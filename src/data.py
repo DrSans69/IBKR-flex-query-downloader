@@ -52,6 +52,7 @@ class Credentials:
         #     log_and_raise(msg, ValueError)
 
         self._data[name] = Credential(token, query_id)
+        logging.info(f"Credential '{name}' added")
 
     def remove(self, name: str) -> None:
         if name not in self._data:
@@ -59,11 +60,14 @@ class Credentials:
             return
 
         del self._data[name]
+        logging.info(f"Credential '{name}' removed")
 
     def read(self):
         credentials = read_csv(CREDS_FILENAME)
         if not credentials:
             return
+
+        logging.info(f"Loading credentials from file {CREDS_FILENAME}")
 
         for credential in credentials:
             name = credential.get("name")
@@ -75,6 +79,8 @@ class Credentials:
                 continue
 
             self.add(name, token, query_id)
+
+        logging.info(f"Done loading")
 
     def write(self):
         credentials = [
@@ -95,7 +101,9 @@ def read_csv(path: str) -> List[Dict[str, str]] | None:
 
 def write_csv(path: str, fields: List[str], data: Iterable[Dict[str, Any]]):
 
-    os.makedirs(os.path.dirname(path), exist_ok=True)
+    dirpath = os.path.dirname(path)
+    if dirpath:
+        os.makedirs(dirpath, exist_ok=True)
 
     with open(path, 'w', newline='') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=fields)
@@ -104,6 +112,7 @@ def write_csv(path: str, fields: List[str], data: Iterable[Dict[str, Any]]):
 
 
 def save_report(data: str, filename: str):
+
     os.makedirs(REPORTS_DIR, exist_ok=True)
     path = os.path.join(REPORTS_DIR, filename)
     with open(path, "w", encoding="utf-8") as f:
