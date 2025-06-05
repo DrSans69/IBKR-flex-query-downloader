@@ -2,7 +2,7 @@ import logging
 
 from ibkr_requests import *
 from data import *
-from config import CREDS_FILENAME
+from config import CREDS_FILENAME, XML_FILENAME, CSV_FILENAME, REPORTS_DIR
 
 logging.basicConfig(
     level=logging.INFO,
@@ -27,9 +27,12 @@ def get_report(token: str, query_id: str) -> requests.Response | None:
 def main():
     creds = Credentials()
 
-    if not len(creds):
-        logging.warning(
+    if not creds:
+        logging.error(
             f"File with credentials ({CREDS_FILENAME}) is empty or incorrectly structured")
+        return
+
+    reports: List[str] = []
 
     for name, cred in creds.items():
         token = cred.token
@@ -47,14 +50,26 @@ def main():
         content = report.text.strip()
 
         if "xml" in content_type.lower():
-            save_xml_report(content)
-            logging.info("XML data saved to trade_history.xml")
+            logging.warning("Report is xml")
+            filename = f"{XML_FILENAME}_{name}"
+            save_report(content, filename)
 
         else:
-            save_csv_report(content)
-            logging.info("CSV data saved to trade_history.csv")
+            reports.append(content)
 
-        logging.info("Report saved")
+    if not reports:
+        logging.info("No csv reports")
+        return
+
+    logging.info("Merging reports")
+
+    reports = merge_csv_texts(reports)
+
+    save_report(reports[0], CSV_FILENAME)
+
+    for i, text in enumerate(reports[1:], start=1):
+        filename = f"{CSV_FILENAME}_{i}"
+        save_report(text, filename)
 
 
 if __name__ == "__main__":

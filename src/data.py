@@ -3,9 +3,9 @@ import csv
 import logging
 from dataclasses import dataclass
 from typing import Any, List, Iterator, Dict, Iterable, Tuple
+from io import StringIO
 
-from config import REPORTS_DIR, XML_FILENAME, CSV_FILENAME, CREDS_FILENAME, FIELDS
-from helpers import log_and_raise
+from config import REPORTS_DIR, CREDS_FILENAME, FIELDS
 
 
 @dataclass
@@ -15,8 +15,19 @@ class Credential:
 
 
 class Credentials:
+    _instance = None
+    _initialized = False
+
+    def __new__(cls, *args, **kwargs):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+
     def __init__(self) -> None:
-        self._data: Dict[str, Credential] = {}
+        if not self._initialized:
+            self._data: Dict[str, Credential] = {}
+            self.read()
+            self._initialized = True
 
     def __iter__(self) -> Iterator[Credential]:
         return iter(self._data.values())
@@ -52,7 +63,6 @@ class Credentials:
     def read(self):
         credentials = read_csv(CREDS_FILENAME)
         if not credentials:
-
             return
 
         for credential in credentials:
@@ -93,15 +103,43 @@ def write_csv(path: str, fields: List[str], data: Iterable[Dict[str, Any]]):
         writer.writerows(data)
 
 
-def save_xml_report(xml_data: str):
+def save_report(data: str, filename: str):
     os.makedirs(REPORTS_DIR, exist_ok=True)
-    xml_path = os.path.join(REPORTS_DIR, XML_FILENAME)
-    with open(xml_path, "w", encoding="utf-8") as f:
-        f.write(xml_data)
+    path = os.path.join(REPORTS_DIR, filename)
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(data)
+        logging.info(f"Report saved to {path}")
 
 
-def save_csv_report(csv_data: str):
-    os.makedirs(REPORTS_DIR, exist_ok=True)
-    csv_path = os.path.join(REPORTS_DIR, CSV_FILENAME)
-    with open(csv_path, "w", encoding="utf-8") as f:
-        f.write(csv_data)
+def merge_csv_texts(csv_texts: List[str]) -> List[str]:
+    if not csv_texts:
+        return []
+
+    main_csv = csv_texts[0]
+    main_reader = csv.reader(StringIO(main_csv))
+    main_header = next(main_reader)
+    all_rows = list(main_reader)
+
+    merged = []
+
+    for text in csv_texts[1:]:
+        reader = csv.reader(StringIO(text))
+        try:
+            header = next(reader)
+        except StopIteration:
+            logging.error("Empty csv, skiping")
+            continue
+
+        if header == main_header:
+            all_rows.extend(reader)
+        else:
+            merged.append(text)
+
+    output = StringIO()
+    writer = csv.writer(output)
+    writer.writerow(main_header)
+    writer.writerows(all_rows)
+
+    merged.insert(0, output.getvalue())
+
+    return merged
