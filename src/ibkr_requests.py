@@ -2,7 +2,7 @@ import logging
 
 import requests
 
-from config import SEND_REQUEST_URL_TEMPLATE, FAIL_STATUS, SUCCESS_STATUS, GET_STATEMENT_URL_TEMPLATE
+from config import SEND_REQUEST_URL_TEMPLATE, FAIL_STATUS, SUCCESS_STATUS, FETCH_REPORT_URL_TEMPLATE
 from xml_wrapper import get_tag_value
 
 
@@ -28,9 +28,10 @@ def send_request(token: str, query_id: str) -> str | None:
     return get_tag_value(r.text, "ReferenceCode")
 
 
-def get_statement(token: str, ref_code: str) -> requests.Response | None:
-    data_url = GET_STATEMENT_URL_TEMPLATE.format(
+def fetch_report(token: str, ref_code: str) -> requests.Response | None:
+    data_url = FETCH_REPORT_URL_TEMPLATE.format(
         token=token, ref_code=ref_code)
+    logging.info(data_url)
     try:
         r = requests.get(data_url)
         r.raise_for_status()
