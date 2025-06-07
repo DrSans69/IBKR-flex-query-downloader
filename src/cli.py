@@ -1,5 +1,9 @@
 import argparse
+import logging
+
 from data import Credentials
+import ibkr_reports
+import app
 
 creds = Credentials()
 
@@ -20,8 +24,19 @@ def delete_cli(args):
     print(f"Credential {args.name} removed")
 
 
-def setup_parser():
+def reports_cli(args):
+    if not args.silent:
+        app.run_app(creds)
+        return
+
+    ibkr_reports.process_reports(creds)
+    print("Processed")
+
+
+def setup_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
+    parser.set_defaults(func=reports_cli)
+    parser.add_argument('--silent', action='store_true')
     subparsers = parser.add_subparsers(dest='command')
 
     parser_add = subparsers.add_parser('add')

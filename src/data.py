@@ -55,7 +55,7 @@ class Credentials:
         logging.info(f"Credential '{name}' added")
 
     def remove(self, name: str) -> None:
-        if name not in self._data:
+        if name not in self._data.keys():
             logging.error(f"No credential found with name '{name}'.")
             return
 
