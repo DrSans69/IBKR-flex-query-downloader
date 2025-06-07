@@ -1,9 +1,15 @@
 import argparse
 import logging
 
-from data import Credentials
-import ibkr_reports
-import app
+import src.core as core
+import src.gui as gui
+from src.data import Credentials
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="[%(levelname)s] %(message)s"
+)
+
 
 creds = Credentials()
 
@@ -26,14 +32,14 @@ def delete_cli(args):
 
 def reports_cli(args):
     if not args.silent:
-        app.run_app(creds)
+        gui.run_gui(creds)
         return
 
-    ibkr_reports.process_reports(creds)
+    core.process_reports(creds)
     print("Processed")
 
 
-def setup_parser() -> argparse.ArgumentParser:
+def create_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     parser.set_defaults(func=reports_cli)
     parser.add_argument('--silent', action='store_true')
@@ -53,3 +59,14 @@ def setup_parser() -> argparse.ArgumentParser:
     parser_delete.set_defaults(func=delete_cli)
 
     return parser
+
+
+def main():
+    parser = create_parser()
+
+    args = parser.parse_args()
+    args.func(args)
+
+
+if __name__ == "__main__":
+    main()

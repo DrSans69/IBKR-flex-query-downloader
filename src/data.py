@@ -1,11 +1,11 @@
-import os
 import csv
 import logging
+import os
 from dataclasses import dataclass
-from typing import Any, List, Iterator, Dict, Iterable, Tuple
 from io import StringIO
+from typing import Any, Dict, Iterable, Iterator, List, Tuple
 
-from config import REPORTS_DIR, CREDS_FILENAME, FIELDS
+from src.config import CREDS_FILENAME, FIELDS, REPORTS_DIR
 
 
 @dataclass

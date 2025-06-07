@@ -2,8 +2,13 @@ import logging
 
 import requests
 
-from config import SEND_REQUEST_URL_TEMPLATE, FAIL_STATUS, SUCCESS_STATUS, FETCH_REPORT_URL_TEMPLATE
-from xml_wrapper import get_tag_value
+from src.config import (
+    FAIL_STATUS,
+    FETCH_REPORT_URL_TEMPLATE,
+    SEND_REQUEST_URL_TEMPLATE,
+    SUCCESS_STATUS,
+)
+from src.utils import get_tag_value
 
 
 def send_request(token: str, query_id: str) -> str | None:

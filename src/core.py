@@ -1,11 +1,12 @@
 import logging
 from typing import List
 
-from config import CREDS_FILENAME, XML_FILENAME, CSV_FILENAME
 import requests
-from ibkr_requests import *
-from data import Credentials
-import data
+
+import src.data as data
+from src.config import CREDS_FILENAME, CSV_FILENAME, XML_FILENAME
+from src.data import Credentials
+from src.ibkr_requests import *
 
 logging.basicConfig(
     level=logging.INFO,
