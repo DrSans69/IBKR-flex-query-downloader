@@ -144,7 +144,7 @@ def merge_csv_texts(csv_texts: List[str]) -> List[str]:
         else:
             merged.append(text)
 
-    output = StringIO()
+    output = StringIO(newline='')
     writer = csv.writer(output)
     writer.writerow(main_header)
     writer.writerows(all_rows)
