@@ -28,7 +28,8 @@ def process_reports(creds: Credentials):
 
     if not creds:
         logger.error(
-            f"File with credentials ({CREDS_FILENAME}) is empty or incorrectly structured")
+            f"File with credentials ({CREDS_FILENAME}) is empty or incorrectly structured"
+        )
         return
 
     reports: List[str] = []
@@ -49,23 +50,24 @@ def process_reports(creds: Credentials):
         content = report.text.strip()
 
         if "xml" in content_type.lower():
-            logger.warning("Report is xml")
             filename = f"{name}_{XML_FILENAME}"
             data.save_report(content, filename)
 
-        else:
+        else:  # csv (probably)
+            filename = f"{name}_{CSV_FILENAME}"
+            data.save_report(content, filename)
+
             reports.append(content)
 
     if not reports:
         logger.info("No csv reports")
         return
 
-    logger.info("Merging reports")
+    logger.info("Merging csv reports")
 
     reports = data.merge_csv_texts(reports)
 
     data.save_report(reports[0], CSV_FILENAME)
 
-    for i, text in enumerate(reports[1:], start=1):
-        filename = f"{i}_{CSV_FILENAME}"
-        data.save_report(text, filename)
+    if len(reports) > 1:
+        logger.warning("Some csv reports were not merged")

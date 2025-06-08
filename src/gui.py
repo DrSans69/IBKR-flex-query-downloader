@@ -1,9 +1,9 @@
+import copy
+import threading
 import tkinter as tk
 import tkinter.scrolledtext
 from tkinter import ttk
 from typing import Callable
-import threading
-import copy
 
 import src.core as core
 from src.data import Credentials
