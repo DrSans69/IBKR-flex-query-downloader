@@ -18,7 +18,8 @@ def get_report(token: str, query_id: str) -> requests.Response | None:
         return None
 
     logger.info(
-        f"Request success, downloading report, reference code - {ref_code}")
+        f"Request success, downloading report, reference code - {ref_code}"
+    )
 
     return fetch_report(token, ref_code)
 

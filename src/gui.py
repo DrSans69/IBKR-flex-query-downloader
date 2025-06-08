@@ -1,8 +1,9 @@
-import logging
 import tkinter as tk
 import tkinter.scrolledtext
 from tkinter import ttk
 from typing import Callable
+import threading
+import copy
 
 import src.core as core
 from src.data import Credentials
@@ -82,18 +83,21 @@ class MainFrame(tk.Frame):
         tk.Button(
             self,
             text="Reports",
+            width=10,
             command=lambda: parent.show_frame(parent.reports_frame)
         ).pack(pady=5)
 
         tk.Button(
             self,
             text="Credentials",
+            width=10,
             command=lambda: parent.show_frame(parent.credentials_frame)
         ).pack(pady=5)
 
         tk.Button(
             self,
             text="Exit",
+            width=10,
             command=parent.root.destroy
         ).pack(pady=5)
 
@@ -114,7 +118,11 @@ class ReportsFrame(tk.Frame):
         tk.Button(
             self,
             text="Start",
-            command=lambda: core.process_reports(parent.creds)
+            command=lambda: threading.Thread(
+                target=core.process_reports,
+                args=(copy.deepcopy(parent.creds),),
+                daemon=True
+            ).start()
         ).pack(pady=10)
 
         tk.Button(
