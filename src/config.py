@@ -7,3 +7,8 @@ FAIL_STATUS = "Fail"
 SUCCESS_STATUS = "Success"
 SEND_REQUEST_URL_TEMPLATE = "https://www.interactivebrokers.com/Universal/servlet/FlexStatementService.SendRequest?t={token}&q={query_id}&v=3"
 FETCH_REPORT_URL_TEMPLATE = "https://www.interactivebrokers.com/Universal/servlet/FlexStatementService.GetStatement?t={token}&q={ref_code}&v=3"
+
+LOG_DIR = "logs"
+LOG_FILENAME = "app.log"
+LOG_SIZE = 5 * 1024 * 1024
+LOG_BACKUPS = 3

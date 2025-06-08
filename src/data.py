@@ -1,11 +1,11 @@
 import csv
-import logging
 import os
 from dataclasses import dataclass
 from io import StringIO
 from typing import Any, Dict, Iterable, Iterator, List, Tuple
 
 from src.config import CREDS_FILENAME, FIELDS, REPORTS_DIR
+from src.my_logging import logger_main as logger
 
 
 @dataclass
@@ -40,7 +40,7 @@ class Credentials:
 
     def add(self, name: str, token: str, query_id: str) -> None:
         if name in self._data:
-            logging.error(f"Credential with name '{name}' already exists.")
+            logger.error(f"Credential with name '{name}' already exists.")
             return
 
         # if not token.isdigit():
@@ -52,22 +52,22 @@ class Credentials:
         #     log_and_raise(msg, ValueError)
 
         self._data[name] = Credential(token, query_id)
-        logging.info(f"Credential '{name}' added")
+        logger.info(f"Credential '{name}' added")
 
     def remove(self, name: str) -> None:
         if name not in self._data.keys():
-            logging.error(f"No credential found with name '{name}'.")
+            logger.error(f"No credential found with name '{name}'.")
             return
 
         del self._data[name]
-        logging.info(f"Credential '{name}' removed")
+        logger.info(f"Credential '{name}' removed")
 
     def read(self):
         credentials = read_csv(CREDS_FILENAME)
         if not credentials:
             return
 
-        logging.info(f"Loading credentials from file {CREDS_FILENAME}")
+        logger.info(f"Loading credentials from file {CREDS_FILENAME}")
 
         for credential in credentials:
             name = credential.get("name")
@@ -75,12 +75,12 @@ class Credentials:
             query_id = credential.get("query_id")
 
             if not name or not token or not query_id:
-                logging.error("Name or token or query_id is missing")
+                logger.error("Name or token or query_id is missing")
                 continue
 
             self.add(name, token, query_id)
 
-        logging.info(f"Done loading")
+        logger.info(f"Done loading")
 
     def write(self):
         credentials = [
@@ -91,7 +91,7 @@ class Credentials:
 def read_csv(path: str) -> List[Dict[str, str]] | None:
 
     if not os.path.exists(path):
-        logging.error(f"No {path} found")
+        logger.error(f"No {path} found")
         return None
 
     with open(path, newline='', encoding='utf-8') as csvfile:
@@ -117,7 +117,7 @@ def save_report(data: str, filename: str):
     path = os.path.join(REPORTS_DIR, filename)
     with open(path, "w", encoding="utf-8") as f:
         f.write(data)
-        logging.info(f"Report saved to {path}")
+        logger.info(f"Report saved to {path}")
 
 
 def merge_csv_texts(csv_texts: List[str]) -> List[str]:
@@ -136,7 +136,7 @@ def merge_csv_texts(csv_texts: List[str]) -> List[str]:
         try:
             header = next(reader)
         except StopIteration:
-            logging.error("Empty csv, skiping")
+            logger.error("Empty csv, skiping")
             continue
 
         if header == main_header:

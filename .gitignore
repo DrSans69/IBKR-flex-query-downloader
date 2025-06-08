@@ -2,8 +2,10 @@ main
 assets/
 lab/
 *.zip
-reports
+reports/*
 credentials.csv
+*.csv
+
 
 *.dSYM
 *.dSYM-*

@@ -1,22 +1,16 @@
 import argparse
-import logging
 
 import src.core as core
 import src.gui as gui
+import src.my_logging as my_logging
 from src.data import Credentials
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="[%(levelname)s] %(message)s"
-)
-
 
 creds = Credentials()
 
 
 def add_cli(args):
     creds.add(args.name, args.token, args.query_id)
-    print(f"Credential {args.name} added")
+    creds.write()
 
 
 def list_cli(args):
@@ -27,7 +21,7 @@ def list_cli(args):
 
 def delete_cli(args):
     creds.remove(args.name)
-    print(f"Credential {args.name} removed")
+    creds.write()
 
 
 def reports_cli(args):
@@ -36,7 +30,6 @@ def reports_cli(args):
         return
 
     core.process_reports(creds)
-    print("Processed")
 
 
 def create_parser() -> argparse.ArgumentParser:
@@ -62,6 +55,8 @@ def create_parser() -> argparse.ArgumentParser:
 
 
 def main():
+    my_logging.setup_logging()
+
     parser = create_parser()
 
     args = parser.parse_args()
